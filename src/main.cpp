@@ -3,15 +3,20 @@
 #include "schildt/parser.h"
 
 int main() {
-  std::cout << "syntax-analyzer demo." << std::endl;
-
-  char exp[] = "AAA";
+  std::cout << "Syntax-analyzer demo." << std::endl;
+  std::cout << "For end of work input dot." << std::endl;
 
   schildt::parser parser;
 
-  double eval_exp = parser.eval_exp(exp);
-  std::cout << "exp=      " << exp << std::endl;
-  std::cout << "eval_exp= " << eval_exp << std::endl;
+  char expstr[80];
+
+  for (;;) {
+    std::cout << "Input expression: ";
+    std::cin.getline(expstr, 79);
+    if(*expstr == '.') break;
+    std::cout << "Answer: " << parser.eval_exp(expstr) << std::endl;
+    std::cout << std::endl;
+  }
 
   return 0;
 }
