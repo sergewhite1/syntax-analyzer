@@ -13,7 +13,7 @@ public:
 
   std::string expression() const { return expression_; }
 
-  virtual void setExpression(const std::string& expression)=0;
+  virtual void setExpression(const std::string& expression);
   virtual double getValue()=0;
 
 protected:

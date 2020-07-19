@@ -7,6 +7,7 @@ project(${PROJECT_NAME})
 add_executable(${PROJECT_NAME}
   schildt_syntax_analyzer/schildt_syntax_analyzer.cpp
   schildt_syntax_analyzer/schildt_syntax_analyzer.h
+  syntax_analyzer/syntax_analyzer.cpp
   syntax_analyzer/syntax_analyzer.h
   main.cpp)
 

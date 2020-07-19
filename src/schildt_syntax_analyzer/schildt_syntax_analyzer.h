@@ -6,7 +6,6 @@
 
 class SchildtSyntaxAnalyzer : public SyntaxAnalyzer {
 public:
-  virtual void setExpression(const std::string& expression) override;
   virtual double getValue() override;
 
 private:
