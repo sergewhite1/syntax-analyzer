@@ -8,3 +8,5 @@ add_library(${PROJECT_NAME} STATIC
   parser.cpp
   parser.h
 )
+
+target_include_directories(${PROJECT_NAME} INTERFACE ../)
