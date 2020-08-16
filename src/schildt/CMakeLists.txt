@@ -9,4 +9,6 @@ add_library(${PROJECT_NAME} STATIC
   parser.h
 )
 
+set_default_compiler_options(${PROJECT_NAME})
+
 target_include_directories(${PROJECT_NAME} INTERFACE ../)

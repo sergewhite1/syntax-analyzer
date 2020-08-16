@@ -13,6 +13,8 @@ add_library(${PROJECT_NAME} STATIC
   syntax_analyzer.h
 )
 
+set_default_compiler_options(${PROJECT_NAME})
+
 target_link_libraries(${PROJECT_NAME} schildt)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ../)

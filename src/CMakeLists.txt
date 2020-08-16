@@ -9,6 +9,8 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PRIVATE ./)
 
+set_default_compiler_options(${PROJECT_NAME})
+
 target_link_libraries(${PROJECT_NAME} schildt syntax-analyzer-lib)
 
 add_subdirectory(schildt)

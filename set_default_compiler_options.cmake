@@ -1,0 +1,5 @@
+function(set_default_compiler_options PROJECT_NAME)
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra)
+  endif()
+endfunction()

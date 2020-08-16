@@ -81,7 +81,7 @@ namespace schildt {
       get_token();
       eval_exp4(temp);
       ex = result;
-      if (temp = 0.0) {
+      if (temp == 0.0) {
         result = 1.0;
         return;
       }
@@ -93,7 +93,7 @@ namespace schildt {
     char op;
     op = 0;
 
-    if ((tok_type == DELIMETER) && *token == '+' || *token == '-' ) {
+    if (((tok_type == DELIMETER) && *token == '+') || *token == '-' ) {
       op = *token;
       get_token();
     }

@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+include (set_default_compiler_options.cmake)
+
 set(PROJECT_NAME syntax-analyzer-project)
 
 project(${PROJECT_NAME})

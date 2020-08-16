@@ -5,6 +5,9 @@ set(PROJECT_NAME test-syntax-analyzer)
 project(${PROJECT_NAME})
 
 add_executable(${PROJECT_NAME} test_syntax_analyzer.cpp)
+
+set_default_compiler_options(${PROJECT_NAME})
+
 target_link_libraries(${PROJECT_NAME} syntax-analyzer-lib)
 
 function(add_simplest_ananlyzer_test_cases)
