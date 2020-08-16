@@ -6,6 +6,8 @@ set(PROJECT_NAME syntax-analyzer-project)
 
 project(${PROJECT_NAME})
 
+#set(CMAKE_VERBOSE_MAKEFILE TRUE)
+
 add_subdirectory(src)
 
 enable_testing()
