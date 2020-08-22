@@ -16,6 +16,7 @@ target_link_libraries(${PROJECT_NAME} syntax-analyzer-lib)
 function(add_simplest_ananlyzer_test_cases)
 
 add_test(test_simplest_analyzer_Add ${PROJECT_NAME} --class SimplestSyntaxAnalyzer --testCase Add)
+add_test(test_simplest_analyzer_EmptyExpression ${PROJECT_NAME} --class SimplestSyntaxAnalyzer --testCase EmptyExpression)
 
 endfunction()
 

@@ -72,6 +72,17 @@ int TestCaseAdd(SyntaxAnalyzer* sa) {
   return 1;
 }
 
+int TestCaseEmptyExpression(SyntaxAnalyzer* sa) {
+  int ret = 1;
+  sa->setExpression("");
+  try {
+    sa->getValue();
+  } catch (const SyntaxAnalyzerException& sa) {
+    ret = 0;
+  }
+  return ret;
+}
+
 int main(int argc, char* argv[]) {
   CommandLineArgs commandLineArgs;
   if (commandLineArgs.init(argc, argv) == false) {
@@ -93,8 +104,13 @@ int main(int argc, char* argv[]) {
 
   int ret = 1;
 
-  if (strcmp(commandLineArgs.testCase(), "Add") == 0) {
-    ret = TestCaseAdd(syntax_analyzer.get());
+  const char * testCase = commandLineArgs.testCase();
+  SyntaxAnalyzer * sa = syntax_analyzer.get();
+
+  if (strcmp(testCase, "Add") == 0) {
+    ret = TestCaseAdd(sa);
+  } else if (strcmp(testCase, "EmptyExpression") == 0) {
+    ret = TestCaseEmptyExpression(sa);
   } else {
     std::cerr << "Unexpected test case: " << commandLineArgs.testCase() << std::endl;
     return 1;
