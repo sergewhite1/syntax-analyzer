@@ -9,6 +9,8 @@
 #include "../../src/syntax_analyzer/syntax_analyzer.h"
 #include "../../src/syntax_analyzer/simplest_syntax_analyzer.h"
 
+#include "../same_value.h"
+
 class CommandLineArgs {
 public:
   const char* className() const {
@@ -59,6 +61,14 @@ void printHelp() {
 }
 
 int TestCaseAdd(SyntaxAnalyzer* sa) {
+  std::string expression = "2 + 8";
+  sa->setExpression(expression);
+  double val = sa->getValue();
+
+  if (same_value(val, 10.0)) {
+    return 0;
+  }
+
   return 1;
 }
 

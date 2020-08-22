@@ -4,7 +4,10 @@ set(PROJECT_NAME test-syntax-analyzer)
 
 project(${PROJECT_NAME})
 
-add_executable(${PROJECT_NAME} test_syntax_analyzer.cpp)
+add_executable(${PROJECT_NAME}
+  ../same_value.cpp
+  ../same_value.h
+  test_syntax_analyzer.cpp)
 
 set_default_compiler_options(${PROJECT_NAME})
 

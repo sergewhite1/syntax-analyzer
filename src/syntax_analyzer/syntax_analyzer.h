@@ -1,6 +1,7 @@
 #ifndef SYNTAX_ANALYZER_H_
 #define SYNTAX_ANALYZER_H_
 
+#include <exception>
 #include <string>
 
 class SyntaxAnalyzer {
@@ -18,6 +19,17 @@ public:
 
 protected:
   std::string expression_;
+};
+
+class SyntaxAnalyzerException : public std::exception {
+public:
+  explicit SyntaxAnalyzerException(const char* message);
+
+  // std::excpetion interface
+  virtual const char* what() const noexcept override;
+
+private:
+  const std::string message_;
 };
 
 #endif // ! SYNTAX_ANALYZER_H_
