@@ -61,15 +61,41 @@ void printHelp() {
 }
 
 int TestCaseAdd(SyntaxAnalyzer* sa) {
+  int ret = 1;
   std::string expression = "2 + 8";
   sa->setExpression(expression);
   double val = sa->getValue();
 
   if (same_value(val, 10.0)) {
-    return 0;
+    ret = 0;
   }
 
-  return 1;
+  return ret;
+}
+
+int TestCaseAddMinusExpression(SyntaxAnalyzer* sa) {
+  int ret = 1;
+  std::string expression = "    10  -  20  +  30  -22  ";
+  sa->setExpression(expression);
+  double val = sa->getValue();
+
+  if (same_value(val, -2.0)) {
+    ret = 0;
+  }
+
+  return ret;
+}
+
+int TestBadExpression(SyntaxAnalyzer* sa) {
+  int ret = 1;
+  std::string expression = "22 + 400x";
+  try {
+    sa->setExpression(expression);
+    sa->getValue();
+  } catch (const std::invalid_argument& e) {
+    ret = 0;
+  }
+  return ret;
 }
 
 int TestCaseEmptyExpression(SyntaxAnalyzer* sa) {
@@ -80,6 +106,18 @@ int TestCaseEmptyExpression(SyntaxAnalyzer* sa) {
   } catch (const SyntaxAnalyzerException& sa) {
     ret = 0;
   }
+
+  return ret;
+}
+
+int TestCaseMinus(SyntaxAnalyzer* sa) {
+  int ret = 1;
+  sa->setExpression("10-3");
+  double val = sa->getValue();
+  if (same_value(val, 7.0)) {
+    ret = 0;
+  }
+
   return ret;
 }
 
@@ -109,8 +147,14 @@ int main(int argc, char* argv[]) {
 
   if (strcmp(testCase, "Add") == 0) {
     ret = TestCaseAdd(sa);
+  } else if (strcmp(testCase, "AddMinusExpression") == 0) {
+    ret = TestCaseAddMinusExpression(sa);
+  } else if (strcmp(testCase, "BadExpression") == 0) {
+    ret = TestBadExpression(sa);
   } else if (strcmp(testCase, "EmptyExpression") == 0) {
     ret = TestCaseEmptyExpression(sa);
+  } else if (strcmp(testCase, "Minus") == 0) {
+    ret = TestCaseMinus(sa);
   } else {
     std::cerr << "Unexpected test case: " << commandLineArgs.testCase() << std::endl;
     return 1;

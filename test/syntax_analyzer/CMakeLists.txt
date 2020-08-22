@@ -20,7 +20,10 @@ endfunction()
 function(add_simplest_ananlyzer_test_cases)
   set(testCaseList
     Add
+    AddMinusExpression
+#   BadExpression
     EmptyExpression
+    Minus
   )
   foreach(testCase ${testCaseList})
      add_syntax_analyzer_test(SimplestSyntaxAnalyzer ${testCase})
