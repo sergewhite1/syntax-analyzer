@@ -18,8 +18,13 @@ function (add_syntax_analyzer_test class testCase)
 endfunction()
 
 function(add_simplest_ananlyzer_test_cases)
-  add_syntax_analyzer_test(SimplestSyntaxAnalyzer Add)
-  add_syntax_analyzer_test(SimplestSyntaxAnalyzer EmptyExpression)
+  set(testCaseList
+    Add
+    EmptyExpression
+  )
+  foreach(testCase ${testCaseList})
+     add_syntax_analyzer_test(SimplestSyntaxAnalyzer ${testCase})
+  endforeach()
 endfunction()
 
 # Call add_*_test_cases functions
