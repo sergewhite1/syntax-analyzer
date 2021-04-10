@@ -1,12 +1,9 @@
-# GraphBuilder build script
+# Syntax analyzer  build script
 # Find result in dir: out/linux
 
-cd ..
+cd .. &&
 
-[ -d out ] || mkdir out
-cd out
-
-[ -d linux ] || mkdir linux
-cd linux
+mkdir -p out/linux &&
+cd       out/linux &&
 
 cmake ../.. && cmake --build .
