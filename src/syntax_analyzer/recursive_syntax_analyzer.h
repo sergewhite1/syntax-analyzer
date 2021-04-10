@@ -6,6 +6,9 @@
 class RecursiveSyntaxAnalyzer : public SyntaxAnalyzer {
 public:
   virtual double getValue() override;
+    std::string name() const override {
+    return "RecursiveSyntaxAnalyzer";
+  }
 
   enum class TokenType {UNKNOWN, NUMBER, OPERATION};
 
