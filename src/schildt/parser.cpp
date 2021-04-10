@@ -2,6 +2,9 @@
 
 #include <cstring>
 #include <iostream>
+#include <sstream>
+
+#include "../syntax_analyzer/syntax_analyzer.h"
 
 namespace schildt {
 
@@ -116,9 +119,15 @@ namespace schildt {
   }
 
   void parser::atom(double &result) {
+    char *endptr;
     switch(tok_type) {
       case NUMBER:
-        result = atof(token);
+        result = std::strtod(token, &endptr);
+        if (*endptr != '\0') {
+          std::stringstream ss;
+          ss << "Unknow identifier: " << token;
+          throw SyntaxAnalyzerException::CreateForUnknownIdentifier(token);
+        }
         get_token();
         return;
 

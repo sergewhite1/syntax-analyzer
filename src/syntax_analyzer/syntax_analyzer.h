@@ -7,7 +7,7 @@
 class SyntaxAnalyzer {
 public:
   SyntaxAnalyzer() = default;
-  explicit SyntaxAnalyzer(const std::string& expression): 
+  explicit SyntaxAnalyzer(const std::string& expression):
     expression_(expression) {}
 
   virtual ~SyntaxAnalyzer() = default;
@@ -16,6 +16,7 @@ public:
 
   virtual void setExpression(const std::string& expression);
   virtual double getValue()=0;
+  virtual std::string name() const =0;
 
 protected:
   std::string expression_;
@@ -24,6 +25,8 @@ protected:
 class SyntaxAnalyzerException : public std::exception {
 public:
   explicit SyntaxAnalyzerException(const char* message);
+
+  static SyntaxAnalyzerException CreateForUnknownIdentifier(const char* unknown_identifier);
 
   // std::excpetion interface
   virtual const char* what() const noexcept override;

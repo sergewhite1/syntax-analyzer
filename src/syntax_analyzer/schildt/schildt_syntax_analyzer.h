@@ -7,6 +7,9 @@
 class SchildtSyntaxAnalyzer : public SyntaxAnalyzer {
 public:
   virtual double getValue() override;
+    std::string name() const override {
+    return "SchildtSyntaxAnalyzer";
+  }
 
 private:
   schildt::parser parser_;
