@@ -4,14 +4,16 @@
 #include "syntax_analyzer/schildt/schildt_syntax_analyzer.h"
 #include "syntax_analyzer/simplest_syntax_analyzer.h"
 #include "syntax_analyzer/syntax_analyzer.h"
+#include "syntax_analyzer/recursive_syntax_analyzer.h"
 
 int main() {
   std::cout << "Syntax-analyzer demo." << std::endl;
   std::cout << "For end of work input dot." << std::endl;
 
-  std::unique_ptr<SyntaxAnalyzer> sa = 
-//    std::make_unique<SchildtSyntaxAnalyzer>();
-      std::make_unique<SimplestSyntaxAnalyzer>();
+  std::unique_ptr<SyntaxAnalyzer> sa =
+//   std::make_unique<SchildtSyntaxAnalyzer>();
+//   std::make_unique<SimplestSyntaxAnalyzer>();
+     std::make_unique<RecursiveSyntaxAnalyzer>();
 
   char expstr[80];
 

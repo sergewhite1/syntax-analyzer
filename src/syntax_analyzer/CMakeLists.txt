@@ -7,6 +7,8 @@ project(${PROJECT_NAME})
 add_library(${PROJECT_NAME} STATIC
   schildt/schildt_syntax_analyzer.cpp
   schildt/schildt_syntax_analyzer.h
+  recursive_syntax_analyzer.cpp
+  recursive_syntax_analyzer.h
   simplest_syntax_analyzer.cpp
   simplest_syntax_analyzer.h
   syntax_analyzer.cpp
