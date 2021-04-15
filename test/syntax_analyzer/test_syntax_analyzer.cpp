@@ -2,6 +2,7 @@
 #include <memory>
 #include <iomanip>
 #include <iostream>
+#include <set>
 #include <vector>
 
 #include "../../src/syntax_analyzer/schildt/schildt_syntax_analyzer.h"
@@ -11,75 +12,128 @@
 
 #define UNUSED(x) (void)(x)
 
-void printHelp() {
-  std::cout << "HELP:" << std::endl;
-  std::cout << "./test-syntax-analyzer --class SimplestSyntaxAnalyzer --testCase Add"
-            << std::endl;
+class TestCase {
+public:
+  TestCase(const char* expression,
+           double expected_result,
+           const char* expected_error_msg,
+           std::set<std::string>&& available_syntax_analyzers):
 
-}
+           expression_(expression),
+           expected_result_(expected_result),
+           expected_error_msg_(expected_error_msg),
+           available_syntax_analyzers_(available_syntax_analyzers) {}
 
-struct PositiveTestCase {
-  std::string expression;
-  double expected_result = 0;
+  const std::string& expression() const { return expression_; }
+  double expected_result() const { return expected_result_; }
+  const std::string& expected_error_msg() const { return expected_error_msg_; }
 
-  PositiveTestCase(const char* __expression,
-                   double __expected_result):
-
-                  expression(__expression),
-                  expected_result(__expected_result) {}
-};
-
-struct NegativeTestCase {
-  std::string expression;
-  std::string expected_result_error_msg;
-
-  NegativeTestCase(const char* __expression,
-                   const char* __expected_result_error_msg):
-
-                   expression(__expression),
-                   expected_result_error_msg(__expected_result_error_msg) {}
-};
-
-void RunPositiveTestCase(SyntaxAnalyzer* sa_ptr,
-                         const PositiveTestCase* test_case_ptr,
-                         bool* success_ptr,
-                         double* actual_result_ptr) {
-  sa_ptr->setExpression(test_case_ptr->expression);
-  *actual_result_ptr = sa_ptr->getValue();
-  *success_ptr = same_value(*actual_result_ptr, test_case_ptr->expected_result);
-}
-
-void RunNegativeTestCase(SyntaxAnalyzer* sa_ptr,
-                         const NegativeTestCase* testCase_ptr,
-                         bool* success,
-                         std::string* actual_result_err_msg) {
-
-  actual_result_err_msg->clear();
-  try {
-    sa_ptr->setExpression(testCase_ptr->expression);
-    sa_ptr->getValue();
-  } catch (const SyntaxAnalyzerException& e) {
-     *actual_result_err_msg = e.what();
+  bool available(const std::string& syntax_analyzer_name) const {
+    return available_syntax_analyzers_.find(syntax_analyzer_name) !=
+           available_syntax_analyzers_.cend();
   }
-  *success = *actual_result_err_msg == testCase_ptr->expected_result_error_msg;
+
+private:
+  std::string expression_;
+  double expected_result_;
+  std::string expected_error_msg_;
+  std::set<std::string> available_syntax_analyzers_;
+};
+
+class TestCaseResult {
+public:
+  TestCaseResult() = default;
+  TestCaseResult(const TestCase* test_case_ptr,
+                 double actual_result,
+                 std::string actual_result_msg):
+
+                 skipped_(false),
+                 test_case_ptr_(test_case_ptr),
+                 actual_result_(actual_result),
+                 actual_result_msg_(actual_result_msg) {}
+
+  bool skipped() const { return skipped_; }
+
+  bool success() const {
+    return !skipped_ &&
+            same_value(actual_result(), expected_result()) &&
+            actual_result_msg() == expected_error_msg();
+  }
+
+  std::string expression() const {
+    std::string ret;
+    if (test_case_ptr_) {
+      ret = test_case_ptr_->expression();
+    }
+    return ret;
+  }
+
+  double actual_result() const { return actual_result_;  }
+
+  std::string actual_result_msg() const { return actual_result_msg_; }
+
+  double expected_result() const {
+    double ret = 0.0;
+    if (test_case_ptr_) {
+      ret =  test_case_ptr_->expected_result();
+    }
+    return ret;
+  }
+
+  std::string expected_error_msg() const {
+    std::string ret;
+    if (test_case_ptr_) {
+      ret = test_case_ptr_->expected_error_msg();
+    }
+    return ret;
+  }
+
+private:
+  bool skipped_ = true;
+  const TestCase* test_case_ptr_ = nullptr;
+  double actual_result_ = 0.0;
+  std::string actual_result_msg_;
+};
+
+TestCaseResult RunTestCase(SyntaxAnalyzer* sa_ptr,
+                           const TestCase* test_case_ptr) {
+  double actual_result = 0.0;
+  std::string actual_result_msg;
+  try {
+    sa_ptr->setExpression(test_case_ptr->expression());
+    actual_result = sa_ptr->getValue();
+  } catch (const SyntaxAnalyzerException& e) {
+     actual_result_msg = e.what();
+  }
+  return TestCaseResult(test_case_ptr, actual_result, actual_result_msg);
 }
 
-template <typename ResultType>
-void PrintTestCaseResult(int testCaseIdx,
-                         int testCaseCount,
-                         const std::string& expression,
-                         bool success,
-                         const ResultType& actual_result,
-                         const ResultType& expected_result) {
+void PrintTestCaseResult(const TestCaseResult* test_case_result_ptr,
+                         int testCaseIdx,
+                         int testCaseCount) {
 
-  std::cout << (success ? "\033[32m" : "\033[31m");
+  bool skipped = test_case_result_ptr->skipped();
+  bool success = test_case_result_ptr->success();
+
+  if (skipped) {
+    std::cout << "\033[33m";  // orange font
+  } else if (success) {
+    std::cout << "\033[32m";  // green  font
+  } else {
+    std::cout << "\033[31m";  // red    font
+  }
 
   std::cout << "Test [" << testCaseIdx << " of " << testCaseCount  << "]:"
-            << std::setw(60) << std::left << std::quoted(expression)
-            << (success ? "SUCCESS" : "FAILED") << std::endl;
-  if (!success) {
-    std::cout << "  Actual Result: " << actual_result
-              << "  Expected Result: " << expected_result
+            << std::setw(60) << std::left
+            << std::quoted(test_case_result_ptr->expression());
+  if (skipped) {
+    std::cout << "SKIPPED" << std::endl;
+  } else if (success) {
+    std::cout << "SUCCESS" << std::endl;
+  } else {
+    std::cout << "FAILED" << std::endl;
+    std::cout << "  Actual Result: " << test_case_result_ptr->actual_result()
+              << "  Expected Result: " << test_case_result_ptr->expected_result()
               << std::endl;
   }
   std::cout << "\033[m";
@@ -121,6 +175,70 @@ private:
   size_t failed_test_count_  = 0;
 };
 
+bool RunTestCases(SyntaxAnalyzerTest& sat,
+                  const std::vector<TestCase>& test_cases,
+                  int test_case_count,
+                  int* test_case_idx_ptr) {
+
+  bool ret = true;
+
+  for (const auto& testCase : test_cases) {
+    sat.total_test_count_increment();
+    TestCaseResult test_case_result;
+    if (testCase.available(sat.syntax_analyzer()->name())) {
+      auto res = RunTestCase(sat.syntax_analyzer(), &testCase);
+      if (res.success()) {
+        sat.success_test_count_increment();
+      } else {
+        ret = false;
+        sat.failed_test_count_increment();
+      }
+      test_case_result = std::move(res);
+    }
+
+    if (test_case_result.skipped()) {
+      sat.skipped_test_count_increment();
+    }
+
+    PrintTestCaseResult(&test_case_result,
+                        (*test_case_idx_ptr)++,
+                        test_case_count);
+  }
+  return ret;
+}
+
+std::vector<TestCase> GeneratePositivTestCases() {
+  std::vector<TestCase> r;
+
+  r.push_back({"2+2", 4.0, "", {SchildtSyntaxAnalyzer::NAME,
+                                SimplestSyntaxAnalyzer::NAME}});
+
+  r.push_back({"2 + 8", 10, "", {SchildtSyntaxAnalyzer::NAME,
+                                 SimplestSyntaxAnalyzer::NAME}});
+
+  r.push_back({"    10  -  20  +  30  -22  ", -2.0, "",
+                 {SchildtSyntaxAnalyzer::NAME,
+                 SimplestSyntaxAnalyzer::NAME}});
+
+  r.push_back({"10-3", 7.0, "", {SchildtSyntaxAnalyzer::NAME,
+                                 SimplestSyntaxAnalyzer::NAME}});
+
+  return r;
+}
+
+std::vector<TestCase> GenerateNegativeTestCases() {
+  std::vector<TestCase> r;
+  r.push_back({"22 + 400x", 0.0, "Unknown identifier: 400x",
+                 {SchildtSyntaxAnalyzer::NAME
+                  //SimplestSyntaxAnalyzer::NAME
+                 }});
+
+  r.push_back({"", 0.0, SyntaxAnalyzer::EMPTY_EXPRESSION_ERR_STR,
+               {//SchildtSyntaxAnalyzer::NAME,
+                SimplestSyntaxAnalyzer::NAME}});
+  return r;
+}
+
 int main(int argc, char* argv[]) {
   UNUSED(argc);
   UNUSED(argv);
@@ -133,76 +251,22 @@ int main(int argc, char* argv[]) {
   v.emplace_back(std::make_unique<SchildtSyntaxAnalyzer>());
   v.emplace_back(std::make_unique<SimplestSyntaxAnalyzer>());
 
-  std::vector<PositiveTestCase> positiveTestCases;
-  std::vector<PositiveTestCase>& P = positiveTestCases;
-  P.emplace_back("2+2", 4.0);
-  P.emplace_back("2 + 8", 10);
-  P.emplace_back("    10  -  20  +  30  -22  ", -2.0);
-  P.emplace_back("10-3", 7.0);
-
-  std::vector<NegativeTestCase> negativeTestCases;
-  std::vector<NegativeTestCase>& N = negativeTestCases;
-  N.emplace_back("22 + 400x", "Unknown identifier: 400x");
-  N.emplace_back("", "");
+  auto positiveTestCases = GeneratePositivTestCases();
+  auto negativeTestCases = GenerateNegativeTestCases();
 
   for (auto& sat : v) {
     std::cout << "Syntax Analyzer: " << sat.syntax_analyzer()->name() << std::endl;
-    int testCaseIdx = 1;
     int testCaseCount = positiveTestCases.size() + negativeTestCases.size();
+    int testCaseIdx = 1;
 
     std::cout << "Run positive test cases..." << std::endl;
-    for (const auto& testCase : positiveTestCases) {
-      sat.total_test_count_increment();
-      bool success = false;
-      double actual_result = 0;
-      RunPositiveTestCase(sat.syntax_analyzer(),
-                          &testCase,
-                          &success,
-                          &actual_result);
-      if (success) {
-        sat.success_test_count_increment();
-      } else
-      {
-        ret = 1;
-        sat.failed_test_count_increment();
-      }
-      PrintTestCaseResult(testCaseIdx++,
-                          testCaseCount,
-                          testCase.expression,
-                          success,
-                          actual_result,
-                          testCase.expected_result);
+    if (!RunTestCases(sat, positiveTestCases, testCaseCount, &testCaseIdx)) {
+      ret = 1;
     }
 
     std::cout << "Run negative test cases..." << std::endl;
-    for (const auto& testCase : negativeTestCases) {
-      sat.total_test_count_increment();
-
-      //TODO: Negative unit tests for SimplestSyntaxAnalyzer
-      if (sat.syntax_analyzer()->name() == "SimplestSyntaxAnalyzer") {
-        sat.skipped_test_count_increment();
-        continue;
-      }
-
-      bool success = false;
-      std::string actual_result_err_msg;
-      RunNegativeTestCase(sat.syntax_analyzer(),
-                          &testCase,
-                          &success,
-                          &actual_result_err_msg);
-      if (success) {
-        sat.success_test_count_increment();
-      } else
-      {
-        ret = 1;
-        sat.failed_test_count_increment();
-      }
-      PrintTestCaseResult(testCaseIdx++,
-                          testCaseCount,
-                          testCase.expression,
-                          success,
-                          actual_result_err_msg,
-                          testCase.expected_result_error_msg);
+    if (!RunTestCases(sat, negativeTestCases, testCaseCount, &testCaseIdx)) {
+      ret = 1;
     }
   }
 
@@ -220,5 +284,6 @@ int main(int argc, char* argv[]) {
   if (ret == 0) {
     std::cout << "SUCCESS" << std::endl;
   }
+
   return ret;
 }

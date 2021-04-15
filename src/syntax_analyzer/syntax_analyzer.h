@@ -18,6 +18,8 @@ public:
   virtual double getValue()=0;
   virtual std::string name() const =0;
 
+  static const char* EMPTY_EXPRESSION_ERR_STR;
+
 protected:
   std::string expression_;
 };

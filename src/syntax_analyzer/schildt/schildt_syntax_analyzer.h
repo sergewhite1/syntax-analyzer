@@ -6,10 +6,13 @@
 
 class SchildtSyntaxAnalyzer : public SyntaxAnalyzer {
 public:
+  // SyntaxAnalyzer interface
   virtual double getValue() override;
     std::string name() const override {
-    return "SchildtSyntaxAnalyzer";
+    return SchildtSyntaxAnalyzer::NAME;
   }
+
+  static const std::string NAME;
 
 private:
   schildt::parser parser_;

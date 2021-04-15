@@ -10,6 +10,8 @@ public:
   std::string name() const override {
     return "SimplestSyntaxAnalyzer";
   }
+
+  static const std::string NAME;
 };
 
 
