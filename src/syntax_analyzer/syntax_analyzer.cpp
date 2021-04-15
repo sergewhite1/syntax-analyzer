@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+const char* SyntaxAnalyzer::EMPTY_EXPRESSION_ERR_STR = "Empty expression.";
+
 void SyntaxAnalyzer::setExpression(const std::string& expression) {
   expression_ = expression;
 }

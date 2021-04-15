@@ -3,6 +3,8 @@
 #include <cstring>
 #include <memory>
 
+const std::string SchildtSyntaxAnalyzer::NAME = "SchildtSyntaxAnalyzer";
+
 double SchildtSyntaxAnalyzer::getValue() {
   size_t len = expression_.size();
   std::unique_ptr<char[]> str(new char [len + 1]);

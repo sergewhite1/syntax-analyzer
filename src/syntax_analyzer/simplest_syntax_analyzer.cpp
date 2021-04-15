@@ -2,9 +2,12 @@
 
 #include <sstream>
 
+const std::string SimplestSyntaxAnalyzer::NAME = "SimplestSyntaxAnalyzer";
+
 double SimplestSyntaxAnalyzer::getValue() {
   if (expression_.empty()) {
-    throw SyntaxAnalyzerException("Empty expression.");
+    throw SyntaxAnalyzerException(
+            SimplestSyntaxAnalyzer::EMPTY_EXPRESSION_ERR_STR);
   }
 
   double operand1, operand2;
