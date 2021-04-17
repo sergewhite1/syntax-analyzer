@@ -42,7 +42,9 @@ private:
 
 class TestCaseResult {
 public:
-  TestCaseResult() = default;
+  explicit TestCaseResult(const std::string& expression):
+                          expression_(expression) {}
+
   TestCaseResult(const TestCase* test_case_ptr,
                  double actual_result,
                  std::string actual_result_msg):
@@ -61,7 +63,7 @@ public:
   }
 
   std::string expression() const {
-    std::string ret;
+    std::string ret = expression_;
     if (test_case_ptr_) {
       ret = test_case_ptr_->expression();
     }
@@ -89,6 +91,7 @@ public:
   }
 
 private:
+  std::string expression_;
   bool skipped_ = true;
   const TestCase* test_case_ptr_ = nullptr;
   double actual_result_ = 0.0;
@@ -182,11 +185,11 @@ bool RunTestCases(SyntaxAnalyzerTest& sat,
 
   bool ret = true;
 
-  for (const auto& testCase : test_cases) {
+  for (const auto& test_case : test_cases) {
     sat.total_test_count_increment();
-    TestCaseResult test_case_result;
-    if (testCase.available(sat.syntax_analyzer()->name())) {
-      auto res = RunTestCase(sat.syntax_analyzer(), &testCase);
+    TestCaseResult test_case_result(test_case.expression());
+    if (test_case.available(sat.syntax_analyzer()->name())) {
+      auto res = RunTestCase(sat.syntax_analyzer(), &test_case);
       if (res.success()) {
         sat.success_test_count_increment();
       } else {
