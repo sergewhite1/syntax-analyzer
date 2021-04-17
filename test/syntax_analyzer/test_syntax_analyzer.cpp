@@ -124,7 +124,7 @@ void PrintTestCaseResult(const TestCaseResult* test_case_result_ptr,
   }
 
   std::cout << "Test [" << testCaseIdx << " of " << testCaseCount  << "]:"
-            << std::setw(60) << std::left
+            << std::setw(55) << std::left
             << std::quoted(test_case_result_ptr->expression());
   if (skipped) {
     std::cout << "SKIPPED" << std::endl;
@@ -268,6 +268,9 @@ int main(int argc, char* argv[]) {
     if (!RunTestCases(sat, negativeTestCases, testCaseCount, &testCaseIdx)) {
       ret = 1;
     }
+    std::cout << "==========================================================="
+              << "==================="
+              << std::endl;
   }
 
   // Print final results
