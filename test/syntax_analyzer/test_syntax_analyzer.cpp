@@ -137,6 +137,9 @@ void PrintTestCaseResult(const TestCaseResult* test_case_result_ptr,
     std::cout << "FAILED" << std::endl;
     std::cout << "  Actual Result: " << test_case_result_ptr->actual_result()
               << "  Expected Result: " << test_case_result_ptr->expected_result()
+              << std::endl
+              << " Actual Result Msg: " << std::quoted(test_case_result_ptr->actual_result_msg())
+              << " Expected Error Msg:" << std::quoted(test_case_result_ptr->expected_error_msg())
               << std::endl;
   }
   std::cout << "\033[m";
@@ -237,7 +240,7 @@ std::vector<TestCase> GenerateNegativeTestCases() {
                  }});
 
   r.push_back({"", 0.0, SyntaxAnalyzer::EMPTY_EXPRESSION_ERR_STR,
-               {//SchildtSyntaxAnalyzer::NAME,
+               {SchildtSyntaxAnalyzer::NAME,
                 SimplestSyntaxAnalyzer::NAME}});
   return r;
 }
